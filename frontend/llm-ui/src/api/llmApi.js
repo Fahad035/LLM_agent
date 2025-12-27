@@ -1,9 +1,7 @@
-const API_URL = "https://YOUR-CLOUD-RUN-URL/generate";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-export async function callLLM(prompt) {
-  const start = performance.now();
-
-  const response = await fetch(API_URL, {
+export async function generateResponse(prompt) {
+  const res = await fetch(`${API_BASE_URL}/generate`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -11,19 +9,5 @@ export async function callLLM(prompt) {
     body: JSON.stringify({ prompt }),
   });
 
-  const latency = performance.now() - start;
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw {
-      message: data.detail || "LLM Error",
-      latency,
-    };
-  }
-
-  return {
-    data,
-    latency,
-  };
+  return res.json();
 }
