@@ -5,7 +5,7 @@ import MetricsBar from './components/MetricsBar';
 import PromptBox from './components/PromptBox';
 import ResponseCard from './components/ResponseCard';
 import { AlertCircle } from 'lucide-react';
-import { callLLM } from './api/llmApi';
+import { API_BASE_URL } from './api/llmApi';
 
 function App() {
   const [metrics, setMetrics] = useState({
@@ -27,7 +27,7 @@ function App() {
     };
 
     try {
-      const { data, latency } = await callLLM(prompt);
+      const { data, latency } = await API_BASE_URL(prompt);
       newResponse.response = data.response;
       newResponse.status = 'success';
       newResponse.latency = latency;
