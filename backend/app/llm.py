@@ -1,6 +1,6 @@
 from ddtrace import tracer
 from datadog import statsd
-from config import GEMINI_API_KEY
+from app.config import GEMINI_API_KEY
 import anthropic
 
 def generate_response(prompt: str):

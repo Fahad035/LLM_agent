@@ -1,16 +1,27 @@
 from fastapi import FastAPI
-from schemas import PromptRequest,LLMResponse
-from llm import generate_response
+from fastapi.middleware.cors import CORSMiddleware
 import logging
 from ddtrace import patch_all
 
+from app.schemas import PromptRequest
+from app.llm import generate_response
 
-patch_all()  # Enables APM auto-instrumentation
+# Enable Datadog auto-instrumentation
+patch_all()
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = FastAPI(title="LLM Observability API")
+
+# ✅ CORS (IMPORTANT)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # replace with Vercel domain later
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.post("/generate")
 def generate(prompt_request: PromptRequest):
