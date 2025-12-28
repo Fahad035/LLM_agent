@@ -11,3 +11,12 @@ export async function generateResponse(prompt) {
 
   return res.json();
 }
+
+// {
+//   "rewrites": [
+//     { "source": "/(.*)", "destination": "/" }
+//   ],
+//   "framework": "vite",
+//   "buildCommand": "npm run build",
+//   "outputDirectory": "dist"
+// }
