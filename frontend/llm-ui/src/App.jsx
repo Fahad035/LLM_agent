@@ -27,32 +27,36 @@ function App() {
     };
 
     try {
-      const { data, latency } = await generateResponse(prompt);;
-      newResponse.response = data.response;
+      // result now contains exactly what main.py returns
+      const result = await generateResponse(prompt);
+      
+      newResponse.response = result.response;
       newResponse.status = 'success';
-      newResponse.latency = latency;
-      newResponse.tokens = data.tokens;
-      newResponse.cost = data.cost;
-      newResponse.model = data.model;
+      newResponse.latency_ms = result.latency_ms; 
+      newResponse.tokens = result.tokens;
+      newResponse.cost = result.cost;
+      newResponse.model = result.model;
 
     } catch (error) {
-      newResponse.response = error.message;
+      newResponse.response = "Failed to connect to backend: " + error.message;
       newResponse.status = 'error';
-      newResponse.latency = error.latency || 0;
+      newResponse.latency_ms = 0;
       newResponse.tokens = 0;
       newResponse.cost = 0;
       newResponse.model = 'N/A';
     }
 
     setResponses([newResponse, ...responses]);
+    
     setMetrics(prev => ({
       totalRequests: prev.totalRequests + 1,
-      avgLatency: Math.floor((prev.avgLatency * prev.totalRequests + newResponse.latency) / (prev.totalRequests + 1)),
+      avgLatency: Math.floor((prev.avgLatency * prev.totalRequests + newResponse.latency_ms) / (prev.totalRequests + 1)),
       successRate: newResponse.status === 'success' 
         ? ((prev.successRate * prev.totalRequests) + 100) / (prev.totalRequests + 1)
         : ((prev.successRate * prev.totalRequests)) / (prev.totalRequests + 1),
-      totalCost: (parseFloat(prev.totalCost) + parseFloat(newResponse.cost)).toFixed(2)
+      totalCost: (parseFloat(prev.totalCost) + parseFloat(newResponse.cost)).toFixed(6) // Use 4 decimals for small AI costs
     }));
+    
     setLoading(false);
   };
 

@@ -17,7 +17,7 @@ app = FastAPI(title="LLM Observability API")
 # ✅ CORS (IMPORTANT)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://llm-agent-chi-six.vercel.app"],  # replace with Vercel domain later
+    allow_origins=["https://llm-agent-chi-six.vercel.app","http://localhost:5173"],  # replace with Vercel domain later
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
