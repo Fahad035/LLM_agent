@@ -1,32 +1,33 @@
 import time
-import anthropic
-from app.metrics import record_llm_metrics
+import google.generativeai as genai
+from app.config import GEMINI_API_KEY
+import logging
 
-def generate_response(prompt: str):
+logger = logging.getLogger(__name__)
+
+genai.configure(api_key=GEMINI_API_KEY)
+
+model = genai.GenerativeModel("models/gemini-1.5-flash")
+
+def generate_response(prompt: str) -> str:
     start_time = time.time()
 
-    client = anthropic.Anthropic()
+    try:
+        response = model.generate_content(prompt)
+        text = response.text
 
-    response = client.messages.create(
-        model="claude-3-sonnet-20240229",
-        max_tokens=300,
-        messages=[{"role": "user", "content": prompt}]
-    )
+        latency_ms = int((time.time() - start_time) * 1000)
 
-    latency = time.time() - start_time
-    tokens = response.usage.input_tokens + response.usage.output_tokens
-    cost = round(tokens * 0.000003, 6)  # approx cost
+        logger.info(
+            "LLM response generated",
+            extra={
+                "latency_ms": latency_ms,
+                "prompt_length": len(prompt),
+            },
+        )
 
-    record_llm_metrics(
-        model="claude-3-sonnet",
-        latency=latency,
-        tokens=tokens
-    )
+        return text
 
-    return {
-        "text": response.content[0].text,
-        "latency_ms": int(latency * 1000),
-        "tokens": tokens,
-        "cost": cost,
-        "model": "claude-3-sonnet"
-    }
+    except Exception as e:
+        logger.error(f"Gemini error: {str(e)}")
+        raise
