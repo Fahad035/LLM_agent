@@ -29,9 +29,13 @@ def generate(prompt_request: PromptRequest):
         "LLM request received",
         extra={"prompt_length": len(prompt_request.prompt)}
     )
-    result = generate_response(prompt_request.prompt)
-    return {"response": result}
 
-@app.get("/health")
-def health():
-    return {"status": "ok"}
+    result = generate_response(prompt_request.prompt)
+
+    return {
+        "response": result["text"],
+        "latency": result["latency_ms"],
+        "tokens": result["tokens"],
+        "cost": result["cost"],
+        "model": result["model"]
+    }
