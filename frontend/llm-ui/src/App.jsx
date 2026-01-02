@@ -30,7 +30,7 @@ function App() {
       // result matches the dictionary returned by main.py
       const result = await generateResponse(prompt);
       
-      newResponse.response = result.response; // This is the 'text' from main.py
+      newResponse.response = result.data.response; // This is the 'text' from main.py
       newResponse.status = 'success';
       newResponse.latency = result.latency; 
       newResponse.tokens = result.tokens;
